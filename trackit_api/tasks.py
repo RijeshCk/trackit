@@ -48,11 +48,11 @@ def add_product(url,user):
 
 @shared_task
 def refresh():
-	send_email_notification('Product Refresh started')
+	# send_email_notification('Product Refresh started')
 	products_to_refresh = ProductData.objects.all()
 
 	for product in products_to_refresh:
-		data = parser.parse(product.product_url)
+		data = amazonparser.parse(product.product_url)
 		price = data['price']
 		product_availability = data['availability']
 		PriceData = PriceDetails(price = price, product = product, date = datetime.datetime.now())
@@ -65,7 +65,7 @@ def refresh():
 		except:
 			pass
 		print "[updating ]:",product.product_id
-	send_email_notification('Product Refresh Completed')
+	# send_email_notification('Product Refresh Completed')
 
 @shared_task
 def keep_alive_task():
