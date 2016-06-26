@@ -20,21 +20,16 @@ class ProductSerializer(serializers.Serializer):
 			create and return a new 'Product'
 		"""
 		return ProductData.objects.create(**validated_data)
+	# def get_queryset(self):
+	# 	print "inside get_queryset"
+		
 
 class UserSerializer(serializers.Serializer):
 
 	username = serializers.CharField(required=True,allow_blank=False,max_length=50)
 	email = serializers.EmailField(required=True,allow_blank=False,max_length=50)
 	password = serializers.CharField(required=True,allow_blank=False,max_length=20)
-	# class meta:
-	# 	model = 'UserDetails'
-	# 	validators = [
-	# 		UniqueTogetherValidator(
-	# 			queryset=User.objects.all(),
-	# 			fields=('name','email')
-									
-	# 		)
-	# 	]
+
 	class Meta:
 		model = 'user'
 	def validate(self,data):
@@ -60,3 +55,9 @@ class UserSerializer(serializers.Serializer):
 		# if not "rij" in value:
 			# raise serializers.ValidationError('name not starts with rij')
 		# return value
+class SubscriptionSerializer(serializers.ModelSerializer):
+	user = serializers.CharField(required=True,allow_blank=False,max_length=50)
+	product=serializers.StringRelatedField(many=True)
+	class Meta:
+		model = models.Subscription
+		fields = ('user')
