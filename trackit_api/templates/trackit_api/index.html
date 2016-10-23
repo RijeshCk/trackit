@@ -116,6 +116,7 @@
 					<ul id="myTab" class="nav nav-tabs">
 						<li class="active"><a href="#signin" data-toggle="tab">Sign In</a></li>
 						<li class=""><a href="#signup" data-toggle="tab">Register</a></li>
+						<li class=""><a href="#forgot" data-toggle="tab">Forgot password?</a></li>
 						<li class=""><a href="#why" data-toggle="tab">Why?</a></li>
 
 					</ul>
@@ -123,9 +124,30 @@
 				</div>
 				<div class="modal-body">
 					<div id="myTabContent" class="tab-content">
-						<div class="tab-pane fade in" id="why">
+						<div class="tab-pane fade in " id="why">
 							<p>We need this information so that you can receive access to the site and its content. Rest assured your information will not be sold, traded, or given to anyone.</p>
 							<p></p><br> Please contact <a mailto:href="rijesh36@gmail.com"></a>rijesh36@gmail.com</a> for any other inquiries.</p>
+						</div>
+						<div class="tab-pane fade" id="forgot">
+							<b>Please enter your registered email address to reset password</b>
+							<br>
+							<br>
+							<form >
+								<div class="form-group">
+									{% csrf_token  %}
+									<!-- <label for="exampleInputemail1">email address</label> -->
+									<input type="text" class="form-control" id="exampleInputemail1" placeholder="Enter email" ng-model='email' autofocus='true'>
+								</div>
+							
+								<button  ng-click="resetpassword()" type="button" class="btn btn-info btn-block">Submit</button>
+								<!--  <script type="in/Login"></script> -->
+								{% verbatim %}
+								<span ng-model="confirmation_response_text">{{confirmation_response_text}}
+								{% endverbatim %}
+								</span>
+							</form>
+							
+							
 						</div>
 						<div class="tab-pane fade active in" id="signin">
 
@@ -144,6 +166,9 @@
 
 							</form>
 							<a href="http://127.0.0.1:8000/authenticate/">login with linkedin</a>
+							
+							<li class=""><a href="#forgot" data-toggle="tab">Forgot password?</a></li>
+
 							{%verbatim%}
 							<span ng-model="error_message" ng-class="login_error_class">{{login_error_message}}</span>
 							{% endverbatim%}
@@ -411,7 +436,7 @@
 							return false
 						}
 						);}
-$scope.email = "username@exampledomain.com" 
+// $scope.email = "username@exampledomain.com" 
 password1 = $scope.password1;
 password2 = $scope.password2;
 console.log(password1,password2);
@@ -483,6 +508,27 @@ $scope.signup = function(){
 			$scope.notifyme=function(name){
 				console.log(name);
 				$scope.product_name = name;
+
+			}
+			$scope.resetpassword = function(){
+				console.log('in reset fun');
+				var csrf='{{ csrf_token }}';
+				console.log($scope.email);
+				$http({method:'POST',url:base_url+'/resetpassword/',data:{'email':$scope.email},
+				headers: {'X-CSRFToken' : csrf }}).then(
+				function sucessCallback(response,status){
+					console.log("reset link sent to registerd email");
+					console.log(response,status);
+					$scope.confirmation_response_text =response.data['content']; 
+
+				},
+				function errorCallback(response,status){
+					console.log('faild to send email');
+					$scope.confirmation_response_text =response.data['content']; 
+				}
+
+
+				)
 
 			}
 

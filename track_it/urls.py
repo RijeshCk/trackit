@@ -25,4 +25,6 @@ urlpatterns = [
     url(r'^signup/',views.Signup.as_view()),
     url(r'^subscription/user=(?P<user>(\w+))/',views.Getsubscription.as_view()),
     url(r'^history/id=(?P<id>([0-9A-Z]{,10}))/',views.PriceHistory.as_view()),
+    url(r'^resetpassword/',views.Resetpassword.as_view()),
+    url(r'^account/verify/(?P<key>(.*))',views.verify.as_view()),
 ]

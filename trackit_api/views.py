@@ -7,8 +7,11 @@ from tasks import add_product
 from trackit_api.models import *
 from trackit_api.serializers import UserSerializer,SubscriptionSerializer
 from rest_framework import status
+from rest_framework.authtoken.models import Token
 # from LinkedinAuth import LinkedinOauthClient
-import re
+import re,base64,datetime
+from utils import send_confirmation
+from track_it import settings
 
 
 class Index(APIView):
@@ -17,7 +20,7 @@ class Index(APIView):
 	def post(self,request):
 		pass
 class Validationfailed(ParseError):
-	default_detail = "Please provide valid produt url"
+	default_detail = "Please provide valid product url"
 
 class AddProduct(APIView):
 	"""
@@ -112,6 +115,38 @@ class Signup(APIView):
 				request.session['user_name'] = data_to_db.username
 				subscribed_data = listings(user)
 			return Response(subscribed_data)
+
+def activationkey_generator(user):
+	date = datetime.datetime.now()
+	user = user
+	unique_token_string = str(date)+user
+	encoded_token_string = base64.b64encode(unique_token_string)
+	return encoded_token_string
+
+class Resetpassword(APIView):
+	def post(self,request):
+		print "hai",
+		email = request.data['email']
+		print email
+		if User.objects.filter(email=email).exists():
+			print "registered email",
+			User.objects.get(email=email)
+			key = activationkey_generator(email)
+			link = settings.BASE_URL+'/account/verify/'+key
+			print link
+			send_confirmation(email,link)
+			return Response({'content':' Reset link sent to '+email+' . Please check'},status=status.HTTP_200_OK)
+			#send reset link to mail
+		else:
+			content = {'content':' Entered email is not registered '}
+			return Response(content, status=status.HTTP_404_NOT_FOUND)
+
+
+class verify(APIView):
+	def get(self,request,key):
+		print "key from url",key
+		#nest step is to verify this key ,generate a form to reset the password
+		
 
 
 class Fetchall(APIView):
