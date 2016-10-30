@@ -33,3 +33,8 @@ class CustomAuth(models.Model):
 	user = models.OneToOneField(User)
 	client_id = models.CharField(max_length=20)
 	access_token  =models.CharField(max_length=100)
+
+class PricedropDetails(models.Model):
+	user = models.OneToOneField(User)
+	product = models.ForeignKey(ProductData)
+	drop_value = models.FloatField()

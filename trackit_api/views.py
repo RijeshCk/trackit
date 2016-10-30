@@ -12,6 +12,8 @@ from rest_framework.authtoken.models import Token
 import re,base64,datetime
 from utils import send_confirmation
 from track_it import settings
+from config import *
+
 
 
 class Index(APIView):
@@ -79,26 +81,19 @@ class Authenticate(APIView):
 		user = authenticate(username=username, password=password)
 		if user:
 			if user.is_active:
-				#return all subscribed products :-)
-
 				subscribed_data = listings(user)
 				request.session["username"] = user.username
-				return Response(subscribed_data)
-				print "session created"
+				return Response(subscribed_data,status=status.HTTP_200_OK)
+				
 			else:
-				print 'inactive user'
+				subscribed_data = []
+				return Response(subscribed_data,status.status.HTTP_404_NOT_FOUND)
+	
 	def delete(self,request):
 		logout(request)
-		print "logout success"
 		content = {'user logout succesfully!!'}
-		# return Response(content,status=status.HTTP_200_OK)
+		return Response(content,status=status.HTTP_200_OK)
 	
-	# def get(self,request):
-	# 	user= 'rijesh'
-	# 	subscribed_data = listings(user)
-	# 	print subscribed_data
-	# 	return render(request,'trackit_api/index.html',{"name":user,"subscribed_data":subscribed_data})
-
 #signup code here
 class Signup(APIView):
 	def post(self,request):
@@ -125,26 +120,54 @@ def activationkey_generator(user):
 
 class Resetpassword(APIView):
 	def post(self,request):
-		print "hai",
+		
 		email = request.data['email']
-		print email
 		if User.objects.filter(email=email).exists():
-			print "registered email",
 			User.objects.get(email=email)
 			key = activationkey_generator(email)
-			link = settings.BASE_URL+'/account/verify/'+key
-			print link
+			link = settings.BASE_URL+'/Home/#verify/'+key+'?email='+email
+			redis_connection.set(key,key)
+			redis_connection.expire(key,KEY_TIMEOUT)
 			send_confirmation(email,link)
-			return Response({'content':' Reset link sent to '+email+' . Please check'},status=status.HTTP_200_OK)
+
+			return Response({'content':'An email with password reset instructions has been sent to '+email},status=status.HTTP_200_OK)
 			#send reset link to mail
 		else:
 			content = {'content':' Entered email is not registered '}
 			return Response(content, status=status.HTTP_404_NOT_FOUND)
 
+class Applyresetpassword(APIView):
+	def post(self,request):
+		print ">>>>>>>>>",request.data
+		username = request.data['email']
+		password = request.data['password']
+		
+		user = User.objects.get(username__exact = username)
+		if user:
+			user.set_password(password)
+			user.save()
+			content = {'content':' Password Updated Succesfully!! '}
+			return Response(content,status = status.HTTP_204_NO_CONTENT)
+		else:
+			content = {'content': ' Failed to Update the Password '}
+			return Response(content,status = status.HTTP_404_NOT_FOUND)
+
+
+
 
 class verify(APIView):
-	def get(self,request,key):
+
+	def get(self,request,key,email):
+		print "sssssssssss",email
 		print "key from url",key
+		if settings.redis_connection.exists(key):
+			print "key exists"
+			content = {'key_authenticated':True,'content':'','user':email}
+			return Response(content,status = status.HTTP_200_OK)
+		else:
+			content = {'key_authenticated':False,'content':'','user':email}			
+			print "key expired"
+			return Response(content,status = status.HTTP_401_UNAUTHORIZED)
 		#nest step is to verify this key ,generate a form to reset the password
 		
 
