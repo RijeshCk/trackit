@@ -9,10 +9,8 @@
     <script src="/static/api/js/jquery-1.11.1.min.js"></script>
     <script src="/static/api/js/angular.min.js"></script>
     <script src="/static/api/js/angular-animate.min.js"></script>
-
     <link rel="stylesheet" type="text/css" href="/static/api/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/static/api/css/bootstrap-responsive.css">
-
     <script src="/static/api/js/bootstrap.min.js"></script>
     <link href="/static/api/css/custom-styles.css" rel="stylesheet">
     <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -24,13 +22,13 @@
     <script src='/static/api/js/hichart-script.js'></script>
     <script src='/static/api/js/angular-code.js'></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
-    <!-- <a href="#/verify">verify</a> -->
+
 </head>
 
 <body ng-app="AddtotrackApp" ng-controller="Addtotrackcontroller" id="app1">
     <div class="container">
         <div class="ng-view">
-            angularjs view rendering here {{useremail}}
+            
         </div>
         <div class="row">
             <br>
@@ -275,13 +273,9 @@
                                 <span ng-show='(ResetForm.password1.$dirty && ResetForm.password2.$dirty ) && (ResetForm.password1.$modelValue!=ResetForm.password2.$modelValue || ResetForm.password1.$modelValue!=ResetForm.password2.$modelValue )'>Missmatched Passwords</span>
 
                                 <button ng-click="reset()" type="button" class="btn btn-success btn-block">Reset Password</button>
-                                <!--  <script type="in/Login"></script> -->
 
                             </form>
                             <a href="http://127.0.0.1:8000/authenticate/">login with linkedin</a>
-
-                            <!-- 
-							 -->
 
                             {%verbatim%}
                             <span ng-model="error_message" ng-class="login_error_class">{{login_error_message}}</span> {% endverbatim%}
@@ -294,8 +288,6 @@
                 <div class="modal-footer">
                     <center>
 
-
-                        <!-- <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> -->
                     </center>
                 </div>
             </div>
@@ -330,7 +322,7 @@
 								<span >
 									
 								</span>
-                            <a data-toggle="modal" data-target="#emailModal" ng-click=notifyme(name.name) data="{{name.name}}">
+                            <a data-toggle="modal" data-target="#emailModal" ng-click=notifyme(this) data="{{name.id}}">
 
                                 <p class="glyphicon glyphicon-envelope">
                                     email </p>
@@ -414,7 +406,7 @@
                         {%endverbatim%}
                     </div>
 
-
+                       {%verbatim%}
                     <div class="modal-body">
                         <div id="container" style="min-width: auto; height: auto;overflow:auto">
                             <div class="control-group">
@@ -424,7 +416,7 @@
 
                                     <div class="input-group-addon"><strong> $ </strong>
                                     </div>
-                                    <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount">
+                                    <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount" name="drop_price" ng-model="drop_price">
                                     <div class="input-group-addon">.00</div>
 
                                 </div>
@@ -436,13 +428,16 @@
                                         <span class='glyphicon glyphicon-envelope'></span>
                                     </div>
 
-                                    <input type="text" class="form-control" id="exampleInputAmounts" placeholder="email Address">
+                                    <input type="text" class="form-control" id="exampleInputAmounts" placeholder="email Address" name="pricedrop_email" ng-model="pricedrop_email">
                                 </div>
 
-                                <br>
-                                <button type="button" class="btn btn-info pull-right">Activate</button>
+                                <br> 
+                             
+
+                                <button type="button"  class="btn btn-info pull-right" ng-click=ActivateNotification("{{_id}}")> Activate</button>
                                 &nbsp;&nbsp;&nbsp;
                                 <button type="button" class="btn btn-danger pull-right">Close</button>
+                                {% endverbatim%}
 
                             </div>
                         </div>

@@ -84,7 +84,6 @@ class Authenticate(APIView):
 				subscribed_data = listings(user)
 				request.session["username"] = user.username
 				return Response(subscribed_data,status=status.HTTP_200_OK)
-				
 			else:
 				subscribed_data = []
 				return Response(subscribed_data,status.status.HTTP_404_NOT_FOUND)
@@ -119,8 +118,8 @@ def activationkey_generator(user):
 	return encoded_token_string
 
 class Resetpassword(APIView):
+	
 	def post(self,request):
-		
 		email = request.data['email']
 		if User.objects.filter(email=email).exists():
 			User.objects.get(email=email)
@@ -137,8 +136,8 @@ class Resetpassword(APIView):
 			return Response(content, status=status.HTTP_404_NOT_FOUND)
 
 class Applyresetpassword(APIView):
+	
 	def post(self,request):
-		print ">>>>>>>>>",request.data
 		username = request.data['email']
 		password = request.data['password']
 		
@@ -152,14 +151,9 @@ class Applyresetpassword(APIView):
 			content = {'content': ' Failed to Update the Password '}
 			return Response(content,status = status.HTTP_404_NOT_FOUND)
 
-
-
-
 class verify(APIView):
 
 	def get(self,request,key,email):
-		print "sssssssssss",email
-		print "key from url",key
 		if settings.redis_connection.exists(key):
 			print "key exists"
 			content = {'key_authenticated':True,'content':'','user':email}
@@ -170,8 +164,6 @@ class verify(APIView):
 			return Response(content,status = status.HTTP_401_UNAUTHORIZED)
 		#nest step is to verify this key ,generate a form to reset the password
 		
-
-
 class Fetchall(APIView):
 	def get(self,request):
 		if request.session.get('username'):
@@ -180,6 +172,7 @@ class Fetchall(APIView):
 			return Response(subscribed_data)
 		return Response({'No data Available'})
 		# return render(request,'trackit_api/index.html',{"name":user,"subscribed_data":subscribed_data})
+
 class Getsubscription(APIView):
 	serializer_class = SubscriptionSerializer
 	def get(self,request,user):	
@@ -196,7 +189,6 @@ class Getsubscription(APIView):
 								'product_image': products.product.product_image,
 			}
 			all_subscribed_products.append(subscribed_data)
-
 		return Response(all_subscribed_products)
 
 class PriceHistory(APIView):
@@ -210,4 +202,12 @@ class PriceHistory(APIView):
 				}
 			price_list.append(data)
 		return Response(price_list)
+
+class Notify(APIView):
+	def get(self,request):
+		print "in notification section"
+
+	def post(self,request):
+		print "in noi",request.data
+
 

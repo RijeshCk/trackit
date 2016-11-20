@@ -45,14 +45,13 @@
 	$('#myModal').modal('show');
 	});
 
-
-
-
 	app.controller('Addtotrackcontroller',function($scope,$rootScope,$http,$timeout,$cookies,$window,$routeParams)
 	{
 
 		 $rootScope.$on("CallParentMethod", function(){
            $scope.reset(useremail);
+
+
         });
 		 	$http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
 			
@@ -97,6 +96,25 @@
 		password1 = $scope.password1;
 		password2 = $scope.password2;
 		console.log(password1,password2);
+
+$scope.notifyme=function(product){
+				
+				$scope.product_name=product.name.name;
+				$scope.id = product.name.id;
+				
+			}
+
+$scope.ActivateNotification = function(id){
+	$scope._id=id;
+
+console.log('activate section'+$scope.drop_price);
+$http({method:'POST',url:base_url+'/notify',data:{'id':$scope.id,'drop_price':$scope.drop_price,'pricedrop_email':$scope.pricedrop_email }}).then(
+					function successsCallback(response,status)
+					{console.log('Sucess ');},
+					function errorCallback(response,status){
+						console.log('failed');
+					})
+}
 
 $scope.signup = function(){
 	var csrf='{{ csrf_token }}';
@@ -187,11 +205,21 @@ $scope.signup = function(){
 				)
 
 			}
-			$scope.notifyme=function(name){
-				console.log(name);
-				$scope.product_name = name;
 
-			}
+			// $scope.notifyme=function(name){
+			// 	$scope.product_name = name;
+			// 	// $http({method:'POST',url:base_url+'/notify',data:{'name':$scope.product_name}}).then(
+			// 	// 	function successsCallback(response,status)
+			// 	// 	{console.log('Sucess ');},
+			// 	// 	function errorCallback(response,status){
+			// 	// 		console.log('failed');
+			// 	// 	}
+
+
+			// 	// 	)
+
+			// }
+
 			$scope.resetpassword = function(){
 				console.log('in reset fun');
 				var csrf=$cookies.csrftoken;

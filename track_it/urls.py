@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^resetpassword/',views.Resetpassword.as_view()),
     url(r'^/verify/(?P<key>(.*))/email=(?P<email>(.*))',views.verify.as_view()),
     url(r'^account/applyresetpassword/',views.Applyresetpassword.as_view()),
+    url(r'^notify',views.Notify.as_view())
 
 ]
