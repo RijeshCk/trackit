@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html>
+<meta name="viewport" content="width=device-width">
+
+<title>Confirmation</title>
+
+<style>
+
+  
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  td,
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+</style>
+</head>
+
+<body class="">
+
+<p>Hi there,</p>
+    <p>The merchant site is now updated with its latest price</p>
+    <p>Here are the updated products that you added to our track box. Please have a look.</p>
+
+<table>
+  <tr>
+          <td>Product</td>
+          <td>Price</td>
+          <td>Selected Drop Value</td>
+          <td>Link</td>
+  </tr>
+  {% for product in data %}
+        <tr>
+
+          <td>
+            {{ product.name }}
+          </td>
+          <td>
+            {{product.price}}
+          </td>
+          <td>
+            {{product.drop_value}}
+          </td>
+          <td>
+            <a class='button' style="" href="{{product.url}}">Click Here</a>
+
+          </td>
+          
+        </tr>
+        {% endfor %}
+</table>
+</body>
+</html>

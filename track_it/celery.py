@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'track_it.settings')
 
 from django.conf import settings  # noqa
 
-app = Celery('track_it')
+app = Celery('track_it',broker='redis://redis:6379/1', backend='redis://redis:6379/0',)
 
 # Using a string here means the worker will not have to
 # pickle the object when using Windows.

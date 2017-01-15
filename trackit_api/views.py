@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError,ParseError
 from django.contrib.auth import authenticate,login,logout
 from rest_framework.response import Response
-from tasks import add_product
+from tasks import *
 from trackit_api.models import *
 from trackit_api.serializers import UserSerializer,SubscriptionSerializer
 from rest_framework import status
@@ -13,7 +13,8 @@ import re,base64,datetime
 from utils import send_confirmation
 from track_it import settings
 from config import *
-
+from django.views.decorators.csrf import csrf_exempt
+from celery.result import AsyncResult
 
 
 class Index(APIView):
@@ -21,6 +22,26 @@ class Index(APIView):
 		return render(request,'trackit_api/index.html')
 	def post(self,request):
 		pass
+
+def listings(user):
+	subscribed_products = Subscription.objects.filter(user=user)
+	product_list=[]
+	for product in subscribed_products:
+		data={}
+		price = product.product.product_price
+		data["id"] = product.product.product_id
+		data["name"] = product.product.product_name
+		data["availability"] = product.product.product_availability
+		data["extra_data"] = product.product.product_extra_data
+		data["image"] = product.product.product_image
+		data['price'] = product.product.product_price
+		product_list.append(data)
+	response_data = {'product_list':product_list}
+	try:
+		return response_data
+	except:
+		raise DataUnavailable()
+
 class Validationfailed(ParseError):
 	default_detail = "Please provide valid product url"
 
@@ -48,34 +69,33 @@ class AddProduct(APIView):
 			#checking whether the user is authenticated or not
 			if request.session.get('username'):
 				user=request.session['username']
-				add_product.delay(url,user)
+				task = add_product.delay(url,user)
+				while True:
+					if task.status=='SUCCESS':
+						user = request.session['username']
+						subscribed_data = listings(user)
+						return Response(subscribed_data)
+					elif task.status=="FAILED":
+						pass
+					else:
+						continue
+				
+				if task.status=='SUCCESS':
+					print Fetchall.get(self,request)
+				else:
+					print Fetchall.get(self,request)
+
 			#if not authenticated add product with anonymous user
 			else:
-				print "anonymous user"
 				user = 'anonymous'
-				add_product.delay(url,user)
-
-
-def listings(user):
-	subscribed_products = Subscription.objects.filter(user=user)
-	product_list=[]
-	for product in subscribed_products:
-		data={}
-		price = product.product.product_price
-		data["id"] = product.product.product_id
-		data["name"] = product.product.product_name
-		data["availability"] = product.product.product_availability
-		data["extra_data"] = product.product.product_extra_data
-		data["image"] = product.product.product_image
-		product_list.append(data)
-	response_data = {'product_list':product_list}
-	try:
-		return response_data
-	except:
-		raise DataUnavailable()
+				task = add_product.delay(url,user)				
+				if task.status=='SUCCESS':
+					pass
 	
 class Authenticate(APIView):
+	@csrf_exempt
 	def post(self,request):
+
 		username = request.data['username']
 		password = request.data['password']
 		user = authenticate(username=username, password=password)
@@ -93,7 +113,6 @@ class Authenticate(APIView):
 		content = {'user logout succesfully!!'}
 		return Response(content,status=status.HTTP_200_OK)
 	
-#signup code here
 class Signup(APIView):
 	def post(self,request):
 		#process the input
@@ -105,7 +124,6 @@ class Signup(APIView):
 			serialized.validated_data['password']
 			)
 			if not data_to_db==None:
-				print "user added to db succesfully",data_to_db.username
 				request.session['user_name'] = data_to_db.username
 				subscribed_data = listings(user)
 			return Response(subscribed_data)
@@ -162,7 +180,7 @@ class verify(APIView):
 			content = {'key_authenticated':False,'content':'','user':email}			
 			print "key expired"
 			return Response(content,status = status.HTTP_401_UNAUTHORIZED)
-		#nest step is to verify this key ,generate a form to reset the password
+		#next step is to verify this key ,generate a form to reset the password
 		
 class Fetchall(APIView):
 	def get(self,request):
@@ -205,9 +223,31 @@ class PriceHistory(APIView):
 
 class Notify(APIView):
 	def get(self,request):
-		print "in notification section"
+		pass
 
 	def post(self,request):
-		print "in noi",request.data
-
-
+		product_id = request.data['product_id']
+		drop_price = request.data['drop_price']
+		# username = request.session["username"]
+		username = "rijumon"
+		try:
+			product = ProductData.objects.get(product_id=product_id)
+			
+		except :
+			context = {"error":"Product Does Not Exist"}
+			return Response(context,status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+	
+		try:
+			result = PricedropDetails.objects.get(user=username,product=product)
+			result.drop_value = drop_price
+			result.save()
+			RefreshUpdatedProduct.delay(product)
+			#invoke the celery refresh task here
+			context = {"updated"}
+			return Response(context,status = status.HTTP_200_OK)
+		except PricedropDetails.DoesNotExist:
+			PricedropDetails(user=username,product=product,drop_value=drop_price).save()
+			context = {"new product added"}
+			return Response(context,status = status.HTTP_201_CREATED)
+		except Exception as e:
+			print "here",e

@@ -20,6 +20,8 @@ class ProductSerializer(serializers.Serializer):
 			create and return a new 'Product'
 		"""
 		return ProductData.objects.create(**validated_data)
+	class Meta:
+		fields = ('product_name','product_price','product_url','product_id','product_previous_price','product_extra_data','product_availability','product_image')
 	# def get_queryset(self):
 	# 	print "inside get_queryset"
 		
@@ -32,6 +34,7 @@ class UserSerializer(serializers.Serializer):
 
 	class Meta:
 		model = 'user'
+		fields = ('username','email','password')
 	def validate(self,data):
 		print data
 		if not validate_email(data['email']):
@@ -60,4 +63,4 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 	product=serializers.StringRelatedField(many=True)
 	class Meta:
 		model = models.Subscription
-		fields = ('user')
+		fields = ('user','product')

@@ -41,8 +41,14 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'trackit_api'
+    'trackit_api',
+    'rest_framework_docs'
 )
+
+REST_FRAMEWORK_DOCS = {
+    'HIDE_DOCS': False
+}
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -88,8 +94,8 @@ DATABASES = {
 
 CELERYBEAT_SCHEDULE = {
     'every-day-refresh': {
-        'task': 'trackit_api.tasks.refresh',
-        'schedule': timedelta(minutes = 1),
+        'task': 'trackit_api.tasks.RefreshAll',
+        'schedule': timedelta(minutes = 2),
     },
     'every-hour-refresh':{
         'task':'trackit_api.tasks.keep_alive_task',

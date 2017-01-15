@@ -1,16 +1,7 @@
 from django.contrib import admin
 from trackit_api.models import *
+from django.db.models import get_models,get_app
 
-# Register your models here.
-@admin.register(ProductData)
-class ProductDataAdmin(admin.ModelAdmin):
-	pass
-@admin.register(PriceDetails)
-class PriceDetailsAdmin(admin.ModelAdmin):
-	pass
-@admin.register(Subscription)
-class SubscriptionAdmin(admin.ModelAdmin):
-	pass
-@admin.register(CustomAuth)
-class CustomAuthAdmin(admin.ModelAdmin):
-	pass
+# Registering the models
+for model in get_models(get_app('trackit_api')):
+	admin.site.register(model)

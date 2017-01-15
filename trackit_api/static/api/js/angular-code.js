@@ -1,4 +1,4 @@
-	var app = angular.module('AddtotrackApp',['ngCookies','infinite-scroll','ngRoute']);
+	var app = angular.module('AddtotrackApp',['ngCookies','infinite-scroll','ngRoute','ui.bootstrap']);
 	app.config(function($routeProvider){$routeProvider
 		.when('/ffHome',{
 			template:'<h2>helloo</h2>'
@@ -16,14 +16,11 @@
 	})
 		
 	});
-	app.controller('forgot_account_controller',function($scope){
 
-	// $scope.message = "jabababab";
+
+	app.controller('forgot_account_controller',function($scope){
 	console.log('here');
 	$('#myModal').modal('show');
-	// $('#forgot').show();
-	// $("a.forgot").parent('li').addClass('active');
-
 	});
 	app.controller('verify_account_controller',function($scope,$route,$rootScope,$routeParams){
 		console.log('in verify contoller');
@@ -38,6 +35,7 @@
         });
 
 	});
+
 
 	app.controller('reset_account_controller',function($scope,$routeParams,$route){
 	
@@ -59,7 +57,7 @@
 			base_url = $window.location.origin
 			console.log(base_url);
 			element.focus();
-			console.log("sssssssssssss"+$routeParams.email);
+			
 			$scope.AddtoTrack=function(){
 				url1 = $scope.url;
 				myregex = /[a-zA-Z]/;
@@ -92,27 +90,29 @@
 							return false
 						}
 						);}
-		// $scope.email = "username@exampledomain.com" 
 		password1 = $scope.password1;
 		password2 = $scope.password2;
 		console.log(password1,password2);
 
+
 $scope.notifyme=function(product){
-				
+				console.log('test')
 				$scope.product_name=product.name.name;
 				$scope.id = product.name.id;
-				
+				$scope.price = parseInt(product.name.price);
+				console.log($scope.price)
+				$scope._price = 6;			
 			}
 
 $scope.ActivateNotification = function(id){
-	$scope._id=id;
-
+$scope._id=id;
+console.log('here');
 console.log('activate section'+$scope.drop_price);
 $http({method:'POST',url:base_url+'/notify',data:{'id':$scope.id,'drop_price':$scope.drop_price,'pricedrop_email':$scope.pricedrop_email }}).then(
 					function successsCallback(response,status)
 					{console.log('Sucess ');},
 					function errorCallback(response,status){
-						console.log('failed');
+					console.log('failed');
 					})
 }
 
@@ -131,9 +131,8 @@ $scope.signup = function(){
 			}
 			
 			$scope.login=function(){
+				console.log('test');
 				var csrf=$cookies.csrftoken;
-				console.log('sssshhh'+$cookies.csrftoken);
-				console.log(csrf);
 				$http({method:'POST',url:base_url+'/authenticate/',data:{'username':$scope.username,'password':$scope.password,'type':$scope.aana},headers: {'X-CSRFToken' : csrf }})
 				.then(function successCallback(response,status){
 					console.log("login successfully");
@@ -142,6 +141,7 @@ $scope.signup = function(){
 					$window.location.reload();
 				},
 				function errorCallback(response,status){
+					console.log(response.text)
 					$scope.login_error_message='Invalid Credentials';
 					$scope.login_error_class='login-error-true';
 				}
@@ -168,16 +168,12 @@ $scope.signup = function(){
 						console.log("logout sucessfully in suceeeee");
 						$cookies['username']='';
 						$cookies.remove('username');
-						// $window.location.reload();
 
 					},function errorCallback()
 					{	
-						$window.location.reload();
-						
+						$window.location.reload();					
 						$cookies['username'] = '';
 						$cookies.remove('username');
-
-						// $window.location.reload();
 					});
 				$cookies.remove('username');
 			}
@@ -185,7 +181,6 @@ $scope.signup = function(){
 				console.log('in reset fun'+$scope.useremail);
 				var csrf=$cookies.csrftoken;
 				console.log($scope.email);
-				console.log('dddddd');
 				console.log($routeParams.type, $routeParams.id);
 				$http({method:'POST',url:base_url+'/account/applyresetpassword/',data:{'password':$scope.password1,'email':$scope.useremail},
 				headers: {'X-CSRFToken' : csrf }}).then(
@@ -261,3 +256,28 @@ $scope.signup = function(){
 			},3));
 
 	}); 
+// angular.module('MyApp',['ngMaterial', 'ngMessages', 'material.svgAssetsCache'])
+//   .config(function($mdIconProvider) {
+//     $mdIconProvider
+//       .iconSet('device', 'img/icons/sets/device-icons.svg', 24);
+//   })
+// .controller('AppCtrl', function($scope) {
+
+//   $scope.color = {
+//     red: Math.floor(Math.random() * 255),
+//     green: Math.floor(Math.random() * 255),
+//     blue: Math.floor(Math.random() * 255)
+//   };
+
+//   $scope.rating1 = 3;
+//   $scope.rating2 = 2;
+//   $scope.rating3 = 4;
+
+//   $scope.disabled1 = Math.floor(Math.random() * 100);
+//   $scope.disabled2 = 0;
+//   $scope.disabled3 = 70;
+
+//   $scope.invert = Math.floor(Math.random() * 100);
+
+//   $scope.isDisabled = true;
+// });

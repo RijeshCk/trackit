@@ -5,7 +5,6 @@
     <meta charset="utf-8"> {% load static %}
     <title>Price track</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="/static/api/js/newrelic.js"></script>
     <script src="/static/api/js/jquery-1.11.1.min.js"></script>
     <script src="/static/api/js/angular.min.js"></script>
     <script src="/static/api/js/angular-animate.min.js"></script>
@@ -13,12 +12,15 @@
     <link rel="stylesheet" type="text/css" href="/static/api/css/bootstrap-responsive.css">
     <script src="/static/api/js/bootstrap.min.js"></script>
     <link href="/static/api/css/custom-styles.css" rel="stylesheet">
+    <!-- <link href="/static/api/css/price-slider.css" rel="stylesheet"> -->
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="/static/api/js/jquery.cookie.js"></script>
     <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.0.3.js"></script>
     <script src="/static/api/js/angular-cookies.min.js"></script>
     <script src='/static/api/js/infinite-scroll.js'></script>
+    <script src='/static/api/js/price-slider.js'></script>
     <script src='/static/api/js/hichart-script.js'></script>
     <script src='/static/api/js/angular-code.js'></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
@@ -28,7 +30,7 @@
 <body ng-app="AddtotrackApp" ng-controller="Addtotrackcontroller" id="app1">
     <div class="container">
         <div class="ng-view">
-            
+
         </div>
         <div class="row">
             <br>
@@ -37,9 +39,9 @@
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-admin">
                             <span class="sr-only">Toggle Menu</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
+                            <span class="icon-bar">h</span>
+                            <span class="icon-bar">h</span>
+                            <span class="icon-bar">h</span>
                         </button>
                         <a class="navbar-brand">Price Track <span class="glyphicon glyphicon-stats"></span></a>
                     </div>
@@ -51,46 +53,45 @@
                                 <li class="hidden-sm hidden-xs">
                                     <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target=".bs-modal-sm">
                                         {% verbatim %}
-                                        <span href="#signup" ng-model="check_loggedin" ng-class='hehe'>
+                                <span href="#signup" ng-model="check_loggedin" ng-class='hehe'>
 
-								{{check_loggedin}}
-								<!-- <div ng-model="loggedin_user">{{loggedin_user}}</div> -->
+                                {{check_loggedin}}
+                                <!-- <div ng-model="loggedin_user">{{loggedin_user}}</div> -->
 
+                            </button>
+                            <button type="button" ng-click="logout()" ng-class="classlogout" class="btn btn-primary navbar-btn">
+                                <span class="glyphicon glyphicon-off" class="btn btn-primary btn-lg">
+                                    {% endverbatim %}     
 
-							</button>
-							<button type="button" ng-click="logout()" ng-class="classlogout" class="btn btn-primary navbar-btn">
-								<span class="glyphicon glyphicon-off" class="btn btn-primary btn-lg">
-									{% endverbatim %}     
+                                </li>
+                            </ul>
+                            <div>
+                            </form>
+                            <form class="navbar-form navbar-left" role="search">
+                                <div class="form-group">
+                                    <input type="text" autocomplete='on' class="form-control" placeholder="Search" ng-model='search' id="filter">
+                                </div>
+                            </form>
+                        </div>
 
-								</li>
-							</ul>
-							<div>
-							</form>
-							<form class="navbar-form navbar-left" role="search">
-								<div class="form-group">
-									<input type="text" autocomplete='on' class="form-control" placeholder="Search" ng-model='search' id="filter">
-								</div>
-							</form>
-						</div>
+                    </nav>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
 
-					</nav>
-				</div>
-			</div>
-			<div class="container">
-				<div class="row">
+                    {% verbatim %}
+                    <h2>Track Box</h2>
+                    <div id="custom-search-input">
+                       <div>
+                           <form name="AddForm">
+                            <div class="input-group col-md-12" >
 
-					{% verbatim %}
-					<h2>Track Box</h2>
-					<div id="custom-search-input">
-					   <div>
-						   <form name="AddForm">
-							<div class="input-group col-md-12" >
-
-								<input type="text" class="search-query form-control" placeholder="Paste your product url here" id="search" ng-model="url" name="url" required ng-pattern="" >
-								<span ng-show='AddForm.url.$error.pattern'>{{url}}</span>
+                                <input type="text" class="search-query form-control" placeholder="Paste your product url here" id="search" ng-model="url" name="url" required ng-pattern="" >
+                                <span ng-show='AddForm.url.$error.pattern'>{{url}}</span>
                                         <span class="input-group-btn">
-									<button class="btn btn-danger" type="button" id="add" ng-click="AddtoTrack()" >
-										<span class=" glyphicon glyphicon-eye-open"></span>
+                                    <button class="btn btn-danger" type="button" id="add" ng-click="AddtoTrack()" >
+                                        <span class=" glyphicon glyphicon-eye-open"></span>
                                     </button>
                                     </span>
                         </div>
@@ -159,8 +160,8 @@
                                 <!--  <script type="in/Login"></script> -->
                                 {% verbatim %}
                                 <span ng-model="confirmation_response_text">{{confirmation_response_text}}
-								{% endverbatim %}
-								</span>
+                                {% endverbatim %}
+                                </span>
                             </form>
 
 
@@ -237,17 +238,18 @@
                                     <div class="control-group">
                                         <label class="control-label" for="confirmsignup"></label>
                                         <div class="controls">
-                                            <button id="confirmsignup" name="confirmsignup" class="btn btn-success btn-block" ng-click="signup()">Sign Up
+                                            <button id="confirmsignup" name="confirmsignup" class="btn btn-success btn-block"
+                                            ng-click="signup()">Sign Up
                                             </button>
                                         </div>
                                     </div>
 
                                     <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
-										<span ng-show='myForm.email.$error.email'>Invalid email</span>
+                                        <span ng-show='myForm.email.$error.email'>Invalid email</span>
                                     <span ng-show='myForm.email.$error.required'>email address is required</span>
                                     </span>
                                     <span ng-show='myForm.username.$dirty && myForm.username.$error.required'>
-										<span ng-show='myForm.username.$error.required'>Username is Required</span>
+                                        <span ng-show='myForm.username.$error.required'>Username is Required</span>
                                     </span>
                                     <!-- <span ng-show='myForm.password1.$dirty && myForm.password2.$dirty'> -->
                                     <span ng-show='(myForm.password1.$dirty && myForm.password2.$dirty ) && (myForm.password1.$modelValue!=myForm.password2.$modelValue || myForm.password1.$modelValue!=myForm.password2.$modelValue )'>Missmatched Passwords</span>
@@ -275,9 +277,7 @@
                                 <button ng-click="reset()" type="button" class="btn btn-success btn-block">Reset Password</button>
 
                             </form>
-                            <a href="http://127.0.0.1:8000/authenticate/">login with linkedin</a>
-
-                            {%verbatim%}
+                            <a href="http://127.0.0.1:8000/authenticate/">login with linkedin</a> {%verbatim%}
                             <span ng-model="error_message" ng-class="login_error_class">{{login_error_message}}</span> {% endverbatim%}
 
 
@@ -311,17 +311,17 @@
                         </td>
                         <td class="name-div">
                             <a href=http://www.amazon.in/gp/product/{{name.id}}>
-								{{name.name}}
-							</a>
+                                {{name.name}}
+                            </a>
                             <br>
                             <span class="additional-info">
-								<a data="{{name.id}}" ng-click=chartval(name.id) data-something="hello" data-toggle="modal" onclick=Test(this) data-target="#myModal2">
+                                <a data="{{name.id}}" ng-click=chartval(name.id) data-something="hello" data-toggle="modal" onclick=Test(this) data-target="#myModal2">
 
-									<p class="glyphicon glyphicon-signal" > Chart </p>
-								</a>
-								<span >
-									
-								</span>
+                                    <p class="glyphicon glyphicon-signal" > Chart </p>
+                                </a>
+                                <span >
+                                    
+                                </span>
                             <a data-toggle="modal" data-target="#emailModal" ng-click=notifyme(this) data="{{name.id}}">
 
                                 <p class="glyphicon glyphicon-envelope">
@@ -336,16 +336,16 @@
                                 <li>
                                     <strong>‎₹</strong>
                                     <span class="price">
-							  				{{name.price|number:2}}
-							  			</span>
+                                            {{name.price|number:2}}
+                                        </span>
                                 </li>
                                 <li>
                                     <a href="#home">Price Difference:</a>
                                     <span class="price-difference">
-							  				{{name.price_diff|number:2}}
-							  			</span>
+                                            {{name.price_diff|number:2}}
+                                        </span>
                                     <span ng-class="{chakka:name.price_diff<0,aana:name.price_diff>0}">
-							  			</span>
+                                        </span>
                                 </li>
 
                                 <li>
@@ -358,8 +358,8 @@
                         </td>
                         <td>
                             <span>
-							  			{{name.availability}}
-							  		</span>
+                                        {{name.availability}}
+                                    </span>
 
                         </td>
 
@@ -398,43 +398,28 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        {{product_name}}
+
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         {%verbatim%}
-                        <h4 class="modal-title" ng-model='product_name'>Price Notification for {{product_name}} </h4>
+                        <h4 class="modal-title" ng-model='product_name'>Price Notification for {{product_name}}----{{price}} </h4>
+
                         <!-- <div class="form-group"> -->
                         {%endverbatim%}
                     </div>
 
-                       {%verbatim%}
+                    {%verbatim%}
                     <div class="modal-body">
                         <div id="container" style="min-width: auto; height: auto;overflow:auto">
                             <div class="control-group">
+                            <input type="text" class="form-control" id="exampleInputPassword1" ng-model='drop_price' >
                                 <label for="exampleInputAmount">Amount (in dollars)
                                 </label>
-                                <div class="input-group">
-
-                                    <div class="input-group-addon"><strong> $ </strong>
-                                    </div>
-                                    <input type="text" class="form-control" id="exampleInputAmount" placeholder="Amount" name="drop_price" ng-model="drop_price">
-                                    <div class="input-group-addon">.00</div>
-
-                                </div>
+                                <center>
+                                <input text="text"
                                 <br>
-
-                                <div class="input-group">
-
-                                    <div class="input-group-addon">
-                                        <span class='glyphicon glyphicon-envelope'></span>
-                                    </div>
-
-                                    <input type="text" class="form-control" id="exampleInputAmounts" placeholder="email Address" name="pricedrop_email" ng-model="pricedrop_email">
-                                </div>
-
-                                <br> 
-                             
-
-                                <button type="button"  class="btn btn-info pull-right" ng-click=ActivateNotification("{{_id}}")> Activate</button>
+                                <br>
+                                <button type="button" class="btn btn-info pull-right" 
+                                ng-click=ActivateNotification({{id}})>Activate</button>
                                 &nbsp;&nbsp;&nbsp;
                                 <button type="button" class="btn btn-danger pull-right">Close</button>
                                 {% endverbatim%}
@@ -446,7 +431,21 @@
             </div>
         </div>
     </div>
+//     <script type="text/javascript">
+// $('#ex1').slider(
+// {
+//     formatter: function(value) {
+//         // $('#ex1').attr('data-slider-value',30);
+//         // $('#ex1').attr('value',30);
+//         return 'Current value: ' + value;
+
+//     }
+// }
+// );
+
+//     </script>
 
 </body>
+
 
 </html>

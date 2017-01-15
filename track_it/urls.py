@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from trackit_api import views
+
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^Home/',views.Index.as_view()),
+    url(r'admin/', include(admin.site.urls)),
     url(r'^product/',views.AddProduct.as_view()),
     url(r'^authenticate/',views.Authenticate.as_view()),
     url(r'^fetchall/',views.Fetchall.as_view()),
@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^resetpassword/',views.Resetpassword.as_view()),
     url(r'^/verify/(?P<key>(.*))/email=(?P<email>(.*))',views.verify.as_view()),
     url(r'^account/applyresetpassword/',views.Applyresetpassword.as_view()),
-    url(r'^notify',views.Notify.as_view())
-
+    url(r'^notify',views.Notify.as_view()),
+    url(r'^docs/', include('rest_framework_docs.urls')),
+    url(r'^home',views.Index.as_view())
 ]

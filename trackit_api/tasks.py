@@ -5,6 +5,10 @@ import re
 import datetime
 # from scripts import send_email_notification
 import requests
+from utils import alert_user
+from celery import Celery
+
+app = Celery('track_it',broker='redis://redis:6379/1', backend='redis://redis:6379/0',)
 
 @shared_task
 def add_product(url,user):
@@ -40,6 +44,7 @@ def add_product(url,user):
 		PriceData = PriceDetails(price=price,product=DatafromSite,date=datetime.datetime.now())
 		PriceData.save()
 		Subscription(user = user,product=DatafromSite).save()
+
 		return data
 	
 	except:
@@ -47,11 +52,15 @@ def add_product(url,user):
 		pass
 
 @shared_task
-def refresh():
+def RefreshAll():
 	# send_email_notification('Product Refresh started')
-	products_to_refresh = ProductData.objects.all()
-
-	for product in products_to_refresh:
+	results = []
+	d={}
+	# products_to_refresh = ProductData.objects.all()
+	products_to_refresh = Subscription.objects.all()
+	
+	for products in products_to_refresh:
+		product = products.product
 		data = amazonparser.parse(product.product_url)
 		price = data['price']
 		product_availability = data['availability']
@@ -64,10 +73,58 @@ def refresh():
 			product.save()
 		except:
 			pass
-		print "[updating ]:",product.product_id
+		
+		if products.user in d.keys():
+			result = PriceDropcheck(product)
+			if result:
+				d[products.user].append(result)
+		else:
+			result = PriceDropcheck(product)
+			if result:
+				d[products.user] = [PriceDropcheck(product)]
+
+	for users in d.keys():
+		alert_user(users,d[users])
+
+		
+
+
 	# send_email_notification('Product Refresh Completed')
+@shared_task
+def RefreshUpdatedProduct(product):
+	print "Refreshing the data"
+	data = amazonparser.parse(product.product_url)
+	price = data['price']
+	product_availability = data['availability']
+	PriceData = PriceDetails(price = price, product = product, date = datetime.datetime.now())
+	PriceData.save()
+	product.product_availability = product_availability
+	product.product_previous_price  = product.product_price
+	product.product_price = price
+	try:
+		product.save()
+	except:
+		pass
+	print "[updating ]:",product.product_id,"updated_price :",price
+	
+	a=PriceDropcheck(product)
+
 
 @shared_task
 def keep_alive_task():
 	#To keep the site alive
 	response = requests.get("https://pricetrack-api.herokuapp.com/index")
+
+def PriceDropcheck(product):
+	tracked_products = PricedropDetails.objects.all()
+	for i in tracked_products:
+		if product == i.product:
+			if product.product_price<=i.drop_value:
+				print "alert user"
+				# alert_user()
+				return {"drop_value":i.drop_value,"name":product.product_name,"price":product.product_price,"url":product.product_url}
+			else:
+				print "stay calm my dear"
+		else:
+			print "cannot find match in db"
+	
