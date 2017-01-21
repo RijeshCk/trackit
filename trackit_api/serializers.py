@@ -36,7 +36,6 @@ class UserSerializer(serializers.Serializer):
 		model = 'user'
 		fields = ('username','email','password')
 	def validate(self,data):
-		print data
 		if not validate_email(data['email']):
 			return serializers.ValidationError('Incorrect email')
 		elif len(data['username'])<3:

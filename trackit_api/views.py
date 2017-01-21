@@ -15,6 +15,7 @@ from track_it import settings
 from config import *
 from django.views.decorators.csrf import csrf_exempt
 from celery.result import AsyncResult
+from serializers import *
 
 
 class Index(APIView):
@@ -47,8 +48,10 @@ class Validationfailed(ParseError):
 
 class AddProduct(APIView):
 	"""
-		To add products
+		Endpoint To Track Product
+
 	"""
+	
 	def validate_url(self,url):
 		"""
 			validation of the requested 'url'
@@ -62,6 +65,7 @@ class AddProduct(APIView):
 	def get(self,request):
 		"""
 			add product to db using celery task
+
 		"""
 		url = request.GET['url']
 		if self.validate_url(url):
@@ -93,6 +97,10 @@ class AddProduct(APIView):
 					pass
 	
 class Authenticate(APIView):
+	'''
+		Accepts username,password
+		-:params:sds
+	'''
 	@csrf_exempt
 	def post(self,request):
 
@@ -107,13 +115,16 @@ class Authenticate(APIView):
 			else:
 				subscribed_data = []
 				return Response(subscribed_data,status.status.HTTP_404_NOT_FOUND)
-	
+		else:
+			context = {"Authentication Failed"}
+			return Response(context,status.status.HTTP_403_FORBIDDEN)
 	def delete(self,request):
 		logout(request)
 		content = {'user logout succesfully!!'}
 		return Response(content,status=status.HTTP_200_OK)
 	
 class Signup(APIView):
+	@csrf_exempt
 	def post(self,request):
 		#process the input
 		serialized = UserSerializer(data=request.DATA)
@@ -125,8 +136,13 @@ class Signup(APIView):
 			)
 			if not data_to_db==None:
 				request.session['user_name'] = data_to_db.username
-				subscribed_data = listings(user)
-			return Response(subscribed_data)
+				subscribed_data = listings(data_to_db.username)
+			else:
+				subscribed_data=[]
+			context = {"Successfully Created The Account :-) "}
+			return Response(subscribed_data,status=status.HTTP_201_CREATED)
+		else:
+			print "else case",serialized.errors
 
 def activationkey_generator(user):
 	date = datetime.datetime.now()
@@ -224,7 +240,7 @@ class PriceHistory(APIView):
 class Notify(APIView):
 	def get(self,request):
 		pass
-
+	@csrf_exempt
 	def post(self,request):
 		product_id = request.data['product_id']
 		drop_price = request.data['drop_price']

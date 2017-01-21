@@ -18,17 +18,18 @@ from django.contrib import admin
 from trackit_api import views
 
 urlpatterns = [
-    url(r'admin/', include(admin.site.urls)),
+    
     url(r'^product/',views.AddProduct.as_view()),
     url(r'^authenticate/',views.Authenticate.as_view()),
     url(r'^fetchall/',views.Fetchall.as_view()),
     url(r'^signup/',views.Signup.as_view()),
-    url(r'^subscription/user=(?P<user>(\w+))/',views.Getsubscription.as_view()),
+    url(r'^subscription/user=(?P<user>(.*))/',views.Getsubscription.as_view()),
     url(r'^history/id=(?P<id>([0-9A-Z]{,10}))/',views.PriceHistory.as_view()),
     url(r'^resetpassword/',views.Resetpassword.as_view()),
     url(r'^/verify/(?P<key>(.*))/email=(?P<email>(.*))',views.verify.as_view()),
     url(r'^account/applyresetpassword/',views.Applyresetpassword.as_view()),
     url(r'^notify',views.Notify.as_view()),
-    url(r'^docs/', include('rest_framework_docs.urls')),
-    url(r'^home',views.Index.as_view())
+    url(r'docs/', include('rest_framework_docs.urls')),
+    url(r'^home',views.Index.as_view()),
+    url(r'admin/', include(admin.site.urls))
 ]
