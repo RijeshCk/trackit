@@ -17,15 +17,26 @@ from django.views.decorators.csrf import csrf_exempt
 from celery.result import AsyncResult
 from serializers import *
 
-
 class Index(APIView):
 	def get(self,request):
 		return render(request,'trackit_api/index.html')
 	def post(self,request):
 		pass
 
-def listings(user):
-	subscribed_products = Subscription.objects.filter(user=user)
+def listings(user='thisisrijesh@gmail.com'):
+	""" Dynamically create a :class:`~cerberus.Validator` subclass.
+        Docstrings of mixin-classes will be added to the resulting
+        class' one if ``__doc__`` is not in :obj:`class_dict`.
+    :param name: The name of the new class.
+    :type name: :class:`str`
+    :param mixin: Class(es) with mixin-methods.
+    :type mixin: :class:`tuple` of or a single :term:`class`
+    :param class_dict: Attributes for the new class.
+    :type class_dict: :class:`dict`
+    :return: The created class.
+    """
+	# subscribed_products = Subscription.objects.filter(user=user)
+	subscribed_products = Subscription.objects.all()
 	product_list=[]
 	for product in subscribed_products:
 		data={}
@@ -49,14 +60,26 @@ class Validationfailed(ParseError):
 class AddProduct(APIView):
 	"""
 		Endpoint To Track Product
+		 Dynamically create a :class:`~cerberus.Validator` subclass.
+        Docstrings of mixin-classes will be added to the resulting
+        class' one if ``__doc__`` is not in :obj:`class_dict`.
+    :param name: The name of the new class.
+    :type name: :class:`str`
+    :param mixin: Class(es) with mixin-methods.
+    :type mixin: :class:`tuple` of or a single :term:`class`
+    :param class_dict: Attributes for the new class.
+    :type class_dict: :class:`dict`
+    :return: The created class.
+    """
 
-	"""
+	
 	
 	def validate_url(self,url):
 		"""
 			validation of the requested 'url'
 		"""
 		product_asin = re.findall("([A-Z0-9]{10})",url)
+
 		if not product_asin:
 			raise Validationfailed()
 		else:
@@ -99,13 +122,15 @@ class AddProduct(APIView):
 class Authenticate(APIView):
 	'''
 		Accepts username,password
-		-:params:sds
+		
 	'''
-	@csrf_exempt
+	
 	def post(self,request):
-
+		print "jabaa"
+		print "hereeesssssssdeeeee",request.data
 		username = request.data['username']
 		password = request.data['password']
+		
 		user = authenticate(username=username, password=password)
 		if user:
 			if user.is_active:
@@ -203,6 +228,9 @@ class Fetchall(APIView):
 		if request.session.get('username'):
 			user = request.session['username']
 			subscribed_data = listings(user)
+			return Response(subscribed_data)
+		else:
+			subscribed_data = listings(user='rijesh36@gmail.com')
 			return Response(subscribed_data)
 		return Response({'No data Available'})
 		# return render(request,'trackit_api/index.html',{"name":user,"subscribed_data":subscribed_data})
